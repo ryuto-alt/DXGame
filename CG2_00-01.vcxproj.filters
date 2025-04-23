@@ -51,6 +51,9 @@
     <Filter Include="src\Game\SceneConfig">
       <UniqueIdentifier>{fff665b8-c66d-4193-8f24-bb28b7767e7f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Game\GameProgram">
+      <UniqueIdentifier>{82e5f907-9b82-4ec4-a942-5d9c82dac545}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -163,6 +166,18 @@
     </ClCompile>
     <ClCompile Include="src\Game\scene\GameSceneFactory.cpp">
       <Filter>src\Game\SceneConfig</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Gameprogram\PlayerController.cpp">
+      <Filter>src\Game\GameProgram</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Gameprogram\CameraController.cpp">
+      <Filter>src\Game\GameProgram</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Gameprogram\particleEffectsManager.cpp">
+      <Filter>src\Game\GameProgram</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Gameprogram\UIManager.cpp">
+      <Filter>src\Game\GameProgram</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -297,6 +312,18 @@
     </ClInclude>
     <ClInclude Include="src\Game\scene\GameSceneFactory.h">
       <Filter>src\Game\SceneConfig</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Gameprogram\PlayerController.h">
+      <Filter>src\Game\GameProgram</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Gameprogram\CameraController.h">
+      <Filter>src\Game\GameProgram</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Gameprogram\particleEffectsManager.h">
+      <Filter>src\Game\GameProgram</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Gameprogram\UIManager.h">
+      <Filter>src\Game\GameProgram</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
