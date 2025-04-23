@@ -40,7 +40,7 @@ private:
     // Jump parameters
     bool isJumping_ = false;
     float verticalVelocity_ = 0.0f;
-    float jumpPower_ = 0.25f;    // Initial upward velocity on jump
+    float jumpPower_ = 0.45f;    // Initial upward velocity on jump
     float gravity_ = 0.01f;      // Downward acceleration per frame
 
     // Particle emitters
