@@ -5,6 +5,7 @@
 #include "CameraController.h"
 #include "ParticleEffectsManager.h"
 #include "UIManager.h"
+#include "CollisionVisualizer.h" // Add the visualizer header
 
 class GamePlayScene : public IScene {
 public:
@@ -31,4 +32,7 @@ private:
     std::unique_ptr<CameraController> cameraController_;
     std::unique_ptr<ParticleEffectsManager> particleEffects_;
     std::unique_ptr<UIManager> uiManager_;
+
+    // Collision visualization (for debugging)
+    std::unique_ptr<CollisionVisualizer> collisionVisualizer_;
 };

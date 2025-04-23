@@ -179,6 +179,12 @@
     <ClCompile Include="src\Game\Gameprogram\UIManager.cpp">
       <Filter>src\Game\GameProgram</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Gameprogram\CollisionDetection.cpp">
+      <Filter>src\Game\GameProgram</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Gameprogram\CollisionVisualizer.cpp">
+      <Filter>src\Game\GameProgram</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -323,6 +329,12 @@
       <Filter>src\Game\GameProgram</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Gameprogram\UIManager.h">
+      <Filter>src\Game\GameProgram</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Gameprogram\CollisionDetection.h">
+      <Filter>src\Game\GameProgram</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Gameprogram\CollisionVisualizer.h">
       <Filter>src\Game\GameProgram</Filter>
     </ClInclude>
   </ItemGroup>

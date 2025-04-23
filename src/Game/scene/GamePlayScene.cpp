@@ -1,4 +1,5 @@
 #include "GamePlayScene.h"
+#include "CollisionDetection.h" // Include the new collision detection header
 
 GamePlayScene::GamePlayScene() {
     // Constructor - initialize members to default values
@@ -16,9 +17,24 @@ void GamePlayScene::Initialize() {
     assert(camera_);
 
     try {
+        // Initialize ground model
+        groundModel_ = std::make_unique<Model>();
+        groundModel_->Initialize(dxCommon_);
+        groundModel_->LoadFromObj("Resources/models/stage1", "stage1.obj");
+
+        // Initialize ground object
+        groundObject_ = std::make_unique<Object3d>();
+        groundObject_->Initialize(dxCommon_, spriteCommon_);
+        groundObject_->SetModel(groundModel_.get());
+        groundObject_->SetScale({ 1.0f, 1.0f, 1.0f });
+        groundObject_->SetPosition({ 0.0f, -1.0f, 0.0f });
+        groundObject_->SetEnableLighting(true);
+
         // Create and initialize the various controllers
         playerController_ = std::make_unique<PlayerController>();
         playerController_->Initialize(dxCommon_, spriteCommon_, input_);
+        // Set the stage model for collision detection
+        playerController_->SetStageModel(groundModel_.get());
 
         cameraController_ = std::make_unique<CameraController>();
         cameraController_->Initialize(camera_, input_);
@@ -35,19 +51,6 @@ void GamePlayScene::Initialize() {
         uiManager_->Initialize(dxCommon_, spriteCommon_);
         uiManager_->SetPlayerController(playerController_.get());
         uiManager_->SetCameraController(cameraController_.get());
-
-        // Initialize ground model
-        groundModel_ = std::make_unique<Model>();
-        groundModel_->Initialize(dxCommon_);
-        groundModel_->LoadFromObj("Resources/models/stage1", "stage1.obj");
-
-        // Initialize ground object
-        groundObject_ = std::make_unique<Object3d>();
-        groundObject_->Initialize(dxCommon_, spriteCommon_);
-        groundObject_->SetModel(groundModel_.get());
-        groundObject_->SetScale({ 1.0f, 1.0f, 1.0f });
-        groundObject_->SetPosition({ 0.0f, -1.0f, 0.0f });
-        groundObject_->SetEnableLighting(true);
 
         // Set initialization flag
         initialized_ = true;

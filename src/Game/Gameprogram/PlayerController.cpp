@@ -1,5 +1,6 @@
 #include "PlayerController.h"
 #include "ParticleEffectsManager.h"
+#include "CollisionDetection.h"
 
 PlayerController::PlayerController() {
     // Initialize default values in constructor
@@ -35,6 +36,9 @@ void PlayerController::Initialize(DirectXCommon* dxCommon, SpriteCommon* spriteC
 void PlayerController::Update() {
     // Apply gravity to vertical movement
     ApplyGravity();
+
+    // Handle collisions with the stage
+    HandleCollisions();
 
     // Update the 3D object
     playerObject_->SetPosition(position_);
@@ -87,6 +91,9 @@ void PlayerController::Move(float cameraRotationY) {
         Jump();
     }
 
+    // Store the original position before movement
+    Vector3 originalPosition = position_;
+
     // Apply movement to position
     position_.x += moveVector_.x;
     position_.z += moveVector_.z;
@@ -113,13 +120,6 @@ void PlayerController::ApplyGravity() {
 
         // Update vertical position
         position_.y += verticalVelocity_;
-
-        // Check if player has landed
-        if (position_.y <= 0.0f) {
-            position_.y = 0.0f;
-            isJumping_ = false;
-            verticalVelocity_ = 0.0f;
-        }
     }
 }
 
@@ -127,5 +127,69 @@ void PlayerController::SetPosition(const Vector3& position) {
     position_ = position;
     if (playerObject_) {
         playerObject_->SetPosition(position_);
+    }
+}
+
+void PlayerController::SetStageModel(Model* stageModel) {
+    stageModel_ = stageModel;
+
+    // Extract collision boundaries from the stage model
+    if (stageModel_) {
+        CollisionDetection::ExtractStageBoundaries(stageModel_);
+        OutputDebugStringA("PlayerController: Stage model set for collision detection\n");
+    }
+}
+
+void PlayerController::HandleCollisions() {
+    // Vector to store adjusted position
+    Vector3 adjustedPosition;
+
+    // Check for ground collision
+    bool groundCollision = CollisionDetection::CheckGroundCollision(
+        position_, playerRadius_, playerHeight_, adjustedPosition);
+
+    // Apply ground collision adjustment
+    if (groundCollision) {
+        position_ = adjustedPosition;
+
+        // Reset vertical velocity and jumping state if on ground
+        if (isJumping_ && verticalVelocity_ <= 0.0f) {
+            isJumping_ = false;
+            verticalVelocity_ = 0.0f;
+        }
+    }
+
+    // Check for obstacle collisions
+    bool obstacleCollision = CollisionDetection::CheckObstacleCollision(
+        position_, playerRadius_, adjustedPosition);
+
+    // Apply obstacle collision adjustment
+    if (obstacleCollision) {
+        position_ = adjustedPosition;
+    }
+
+    // Ensure player stays within stage bounds
+    const BoundingBox& stageBounds = CollisionDetection::GetStageBounds();
+
+    // Apply stage boundary constraints
+    if (position_.x - playerRadius_ < stageBounds.min.x) {
+        position_.x = stageBounds.min.x + playerRadius_;
+    }
+    else if (position_.x + playerRadius_ > stageBounds.max.x) {
+        position_.x = stageBounds.max.x - playerRadius_;
+    }
+
+    if (position_.z - playerRadius_ < stageBounds.min.z) {
+        position_.z = stageBounds.min.z + playerRadius_;
+    }
+    else if (position_.z + playerRadius_ > stageBounds.max.z) {
+        position_.z = stageBounds.max.z - playerRadius_;
+    }
+
+    // Prevent falling below the stage
+    if (position_.y < stageBounds.min.y) {
+        position_.y = stageBounds.min.y;
+        isJumping_ = false;
+        verticalVelocity_ = 0.0f;
     }
 }
