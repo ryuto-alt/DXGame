@@ -1,27 +1,26 @@
 #include "PlayerController.h"
 #include "ParticleEffectsManager.h"
-#include "CollisionDetection.h"
 
 PlayerController::PlayerController() {
-    // Initialize default values in constructor
+    // コンストラクタでデフォルト値の初期化
 }
 
 PlayerController::~PlayerController() {
-    // Clean up resources if needed
+    // リソースクリーンアップ（必要があれば）
 }
 
 void PlayerController::Initialize(DirectXCommon* dxCommon, SpriteCommon* spriteCommon, Input* input) {
-    // Store dependencies
+    // 依存関係の保存
     dxCommon_ = dxCommon;
     spriteCommon_ = spriteCommon;
     input_ = input;
 
-    // Initialize player model
+    // プレイヤーモデルの初期化
     playerModel_ = std::make_unique<Model>();
     playerModel_->Initialize(dxCommon_);
     playerModel_->LoadFromObj("Resources/models", "player.obj");
 
-    // Initialize player object
+    // プレイヤーオブジェクトの初期化
     playerObject_ = std::make_unique<Object3d>();
     playerObject_->Initialize(dxCommon_, spriteCommon_);
     playerObject_->SetModel(playerModel_.get());
@@ -29,42 +28,46 @@ void PlayerController::Initialize(DirectXCommon* dxCommon, SpriteCommon* spriteC
     playerObject_->SetPosition(position_);
     playerObject_->SetRotation(rotation_);
 
-    // Debug output
-    OutputDebugStringA("PlayerController: Successfully initialized\n");
+    // プレイヤーのバウンディングボックス初期化
+    playerBoundingBox.min = { position_.x - playerRadius_, position_.y - playerHeight_ / 2, position_.z - playerRadius_ };
+    playerBoundingBox.max = { position_.x + playerRadius_, position_.y + playerHeight_ / 2, position_.z + playerRadius_ };
+
+    // デバッグ出力
+    OutputDebugStringA("PlayerController: 初期化完了\n");
 }
 
 void PlayerController::Update() {
-    // Apply gravity to vertical movement
+    // 重力の適用
     ApplyGravity();
 
-    // Handle collisions with the stage
+    // ステージとの衝突判定と解決
     HandleCollisions();
 
-    // Update the 3D object
+    // 3Dオブジェクトの更新
     playerObject_->SetPosition(position_);
     playerObject_->SetRotation(rotation_);
     playerObject_->Update();
 }
 
 void PlayerController::Draw() {
-    // Draw the player model
+    // プレイヤーモデルの描画
     if (playerObject_) {
         playerObject_->Draw();
     }
 }
 
 void PlayerController::Move(float cameraRotationY) {
-    // Calculate forward and right vectors based on camera rotation
+    // カメラの回転に基づいて前方と右方向のベクトルを計算
     float forwardX = sinf(cameraRotationY);
     float forwardZ = cosf(cameraRotationY);
     float rightX = cosf(cameraRotationY);
     float rightZ = -sinf(cameraRotationY);
 
-    // Reset move vector
+    // 移動ベクトルをリセット
     moveVector_ = { 0.0f, 0.0f, 0.0f };
     isMoving_ = false;
 
-    // Process keyboard input for movement
+    // キーボード入力による移動処理
     if (input_->PushKey(DIK_W)) {
         moveVector_.x += forwardX * moveSpeed_;
         moveVector_.z += forwardZ * moveSpeed_;
@@ -86,41 +89,40 @@ void PlayerController::Move(float cameraRotationY) {
         isMoving_ = true;
     }
 
-    // Check for jump input
-    if (input_->TriggerKey(DIK_SPACE) && !isJumping_) {
+    // ジャンプ入力の処理
+    if (input_->TriggerKey(DIK_SPACE) && onGround_) {
         Jump();
     }
 
-    // Store the original position before movement
+    // 移動前の位置を保存
     Vector3 originalPosition = position_;
 
-    // Apply movement to position
+    // 位置に移動を適用
     position_.x += moveVector_.x;
     position_.z += moveVector_.z;
 
-    // Update player rotation to face movement direction if moving
+    // 移動中なら、移動方向を向くようにプレイヤーの回転を更新
     if (isMoving_) {
-        // Calculate angle from movement direction
+        // 移動方向から角度を計算
         float playerAngle = atan2f(moveVector_.x, moveVector_.z);
         rotation_.y = playerAngle;
     }
 }
 
 void PlayerController::Jump() {
-    if (!isJumping_) {
+    if (onGround_) {
         isJumping_ = true;
+        onGround_ = false;
         verticalVelocity_ = jumpPower_;
     }
 }
 
 void PlayerController::ApplyGravity() {
-    if (isJumping_) {
-        // Apply gravity to vertical velocity
-        verticalVelocity_ -= gravity_;
+    // 重力を垂直速度に適用
+    verticalVelocity_ -= gravity_;
 
-        // Update vertical position
-        position_.y += verticalVelocity_;
-    }
+    // 垂直位置を更新
+    position_.y += verticalVelocity_;
 }
 
 void PlayerController::SetPosition(const Vector3& position) {
@@ -133,45 +135,49 @@ void PlayerController::SetPosition(const Vector3& position) {
 void PlayerController::SetStageModel(Model* stageModel) {
     stageModel_ = stageModel;
 
-    // Extract collision boundaries from the stage model
+    // ステージモデルから衝突境界を抽出
     if (stageModel_) {
         CollisionDetection::ExtractStageBoundaries(stageModel_);
-        OutputDebugStringA("PlayerController: Stage model set for collision detection\n");
+        OutputDebugStringA("PlayerController: ステージモデルの当たり判定を設定しました\n");
     }
 }
 
 void PlayerController::HandleCollisions() {
-    // Vector to store adjusted position
+    // 調整後の位置を格納する変数
     Vector3 adjustedPosition;
 
-    // Check for ground collision
+    // プレイヤーのバウンディングボックスを更新
+    playerBoundingBox.min = { position_.x - playerRadius_, position_.y - playerHeight_ / 2, position_.z - playerRadius_ };
+    playerBoundingBox.max = { position_.x + playerRadius_, position_.y + playerHeight_ / 2, position_.z + playerRadius_ };
+
+    // 地面との衝突判定
     bool groundCollision = CollisionDetection::CheckGroundCollision(
         position_, playerRadius_, playerHeight_, adjustedPosition);
 
-    // Apply ground collision adjustment
+    // 地面との衝突があれば位置を調整
     if (groundCollision) {
         position_ = adjustedPosition;
 
-        // Reset vertical velocity and jumping state if on ground
-        if (isJumping_ && verticalVelocity_ <= 0.0f) {
-            isJumping_ = false;
+        // 地面に着地したら、垂直速度をリセットして接地状態にする
+        if (verticalVelocity_ <= 0.0f) {
+            onGround_ = true;
             verticalVelocity_ = 0.0f;
         }
     }
 
-    // Check for obstacle collisions
+    // 障害物との衝突判定
     bool obstacleCollision = CollisionDetection::CheckObstacleCollision(
         position_, playerRadius_, adjustedPosition);
 
-    // Apply obstacle collision adjustment
+    // 障害物との衝突があれば位置を調整
     if (obstacleCollision) {
         position_ = adjustedPosition;
     }
 
-    // Ensure player stays within stage bounds
+    // ステージの境界を取得
     const BoundingBox& stageBounds = CollisionDetection::GetStageBounds();
 
-    // Apply stage boundary constraints
+    // ステージ境界内に収める
     if (position_.x - playerRadius_ < stageBounds.min.x) {
         position_.x = stageBounds.min.x + playerRadius_;
     }
@@ -186,10 +192,10 @@ void PlayerController::HandleCollisions() {
         position_.z = stageBounds.max.z - playerRadius_;
     }
 
-    // Prevent falling below the stage
+    // ステージ下限より下に落ちないようにする
     if (position_.y < stageBounds.min.y) {
         position_.y = stageBounds.min.y;
-        isJumping_ = false;
         verticalVelocity_ = 0.0f;
+        onGround_ = true;
     }
 }
