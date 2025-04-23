@@ -1,7 +1,6 @@
-#include <windows.h>
-#include <memory>
-#include "WinApp.h"
-#include "MyGame.h"
+// main.cpp - UnoEngineを使用したサンプル
+#include "UnoEngine.h"
+#include "GameSceneFactory.h"
 #include "D3DResourceCheck.h"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -12,31 +11,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         // COM初期化
         CoInitializeEx(0, COINIT_MULTITHREADED);
 
-        // WindowsAPIの初期化 - unique_ptrで管理
-        std::unique_ptr<WinApp> winApp = std::make_unique<WinApp>();
-        winApp->Initialize();
+        // エンジンのインスタンスを取得
+        UnoEngine* engine = UnoEngine::GetInstance();
 
-        // ゲームの作成 - unique_ptrで管理
-        std::unique_ptr<MyGame> game = std::make_unique<MyGame>();
+        // エンジンの初期化
+        engine->Initialize();
 
-        // WinAppを設定
-        game->SetWinApp(winApp.get());
+        // シーンファクトリーの作成と設定
+        SceneFactory* sceneFactory = new GameSceneFactory();
+        engine->SetSceneFactory(sceneFactory);
 
-        // ゲームのメインループを実行
-        game->Run();
+        // 初期シーンへの遷移（SceneManager経由）
+        engine->GetSceneManager()->ChangeScene("Title");
 
-        // ゲームのリソース解放（unique_ptrにより自動的に行われる）
-        game.reset();
-
-        // WindowsAPIの終了処理
-        winApp->Finalize();
-        winApp.reset();
+        // ゲームループの実行
+        engine->Run();
 
         // COM終了処理
         CoUninitialize();
     }
     catch (const std::exception& e) {
-        // 例外をキャッチしてメッセージボックスで表示
+        // 例外発生時のエラーメッセージ表示
         MessageBoxA(nullptr, e.what(), "エラーが発生しました", MB_OK | MB_ICONERROR);
         return -1;
     }

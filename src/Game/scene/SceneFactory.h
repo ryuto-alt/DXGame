@@ -1,5 +1,3 @@
-// SceneFactory.h
-// シーン生成ファクトリー（Factory Methodパターン）
 #pragma once
 
 #include <string>
@@ -12,13 +10,6 @@ public:
     // 仮想デストラクタ
     virtual ~SceneFactory() = default;
 
-    // シーン生成メソッド
+    // シーン生成メソッド（純粋仮想関数）
     virtual std::unique_ptr<IScene> CreateScene(const std::string& sceneName) = 0;
-};
-
-// 具体的なシーンファクトリー
-class GameSceneFactory : public SceneFactory {
-public:
-    // シーン生成メソッドのオーバーライド
-    std::unique_ptr<IScene> CreateScene(const std::string& sceneName) override;
 };

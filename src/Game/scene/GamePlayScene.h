@@ -1,37 +1,42 @@
 #pragma once
 
-#include "IScene.h"
-#include <memory>
+#include "UnoEngine.h"
 
-// ゲームプレイシーンクラス - 基本実装
 class GamePlayScene : public IScene {
 public:
-    // コンストラクタ
+    // コンストラクタ・デストラクタ
     GamePlayScene();
-
-    // デストラクタ
     ~GamePlayScene() override;
 
-    // 初期化
+    // ISceneの実装
     void Initialize() override;
-
-    // 更新
     void Update() override;
-
-    // 描画
     void Draw() override;
-
-    // 終了処理
     void Finalize() override;
 
 private:
-    // カメラ操作（最小限）
+    // カメラ操作
     void ControlCamera();
 
 private:
-    // 初期化フラグ
+    // 初期化済みフラグ
     bool initialized_ = false;
 
-    // ESCキーでタイトルに戻るための機能を残す
-    bool showCursor_ = true;
+    // プレイヤーキャラクター
+    std::unique_ptr<Model> playerModel_;
+    std::unique_ptr<Object3d> playerObject_;
+
+    // 地面オブジェクト
+    std::unique_ptr<Model> groundModel_;
+    std::unique_ptr<Object3d> groundObject_;
+
+    // パーティクルエミッター
+    std::unique_ptr<ParticleEmitter> effectEmitter_;
+
+    // UI要素
+    std::unique_ptr<Sprite> uiSprite_;
+
+    // カメラ制御用
+    float cameraRotation_ = 0.0f;
+    bool showCursor_ = false;
 };
