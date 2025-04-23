@@ -29,80 +29,101 @@ void GamePlayScene::Initialize() {
     // マウスカーソルを非表示
     input_->SetMouseCursor(false);
 
-    // プレイヤーモデルの初期化
-    playerModel_ = std::make_unique<Model>();
-    playerModel_->Initialize(dxCommon_);
-    playerModel_->LoadFromObj("Resources/models", "player.obj");
+    try {
+        // プレイヤーモデルの初期化
+        // プレイヤーモデルの初期化部分
+        playerModel_ = std::make_unique<Model>();
+        playerModel_->Initialize(dxCommon_);
+        playerModel_->LoadFromObj("Resources/models", "player.obj");
 
-    // プレイヤーオブジェクトの初期化
-    playerObject_ = std::make_unique<Object3d>();
-    playerObject_->Initialize(dxCommon_, spriteCommon_);
-    playerObject_->SetModel(playerModel_.get());
-    playerObject_->SetScale({ 1.0f, 1.0f, 1.0f });
-    playerObject_->SetPosition({ 0.0f, 0.0f, 0.0f });
+        // プレイヤーオブジェクトの初期化
+        playerObject_ = std::make_unique<Object3d>();
+        playerObject_->Initialize(dxCommon_, spriteCommon_);
+        playerObject_->SetModel(playerModel_.get());
+        // Blenderのサイズをそのまま使用するためにSetScaleは使わない
+        // または明示的に1.0を設定する場合:
+        playerObject_->SetScale({ 1.0f, 1.0f, 1.0f });
+        playerObject_->SetPosition({ 0.0f, 0.0f, 0.0f });
 
-    // 地面モデルの初期化
-    groundModel_ = std::make_unique<Model>();
-    groundModel_->Initialize(dxCommon_);
-    groundModel_->LoadFromObj("Resources/models/stage1", "stage1.obj");
+        // 地面モデルの初期化
+        groundModel_ = std::make_unique<Model>();
+        groundModel_->Initialize(dxCommon_);
+        groundModel_->LoadFromObj("Resources/models/stage1", "stage1.obj");
 
-    // サイズの問題を修正するために大幅に縮小したスケールで地面オブジェクトを初期化
-    groundObject_ = std::make_unique<Object3d>();
-    groundObject_->Initialize(dxCommon_, spriteCommon_);
-    // 「大きすぎる」モデルの問題を修正するためにスケールを大幅に縮小
-    groundObject_->SetScale({ 0.1f, 0.1f, 0.1f });
-    groundObject_->SetPosition({ 0.0f, -1.0f, 0.0f });
+        // 地面オブジェクトを初期化
+        groundObject_ = std::make_unique<Object3d>();
+        groundObject_->Initialize(dxCommon_, spriteCommon_);
+        groundObject_->SetModel(groundModel_.get());
+        // Blenderのサイズをそのまま使用するためにSetScaleは使わない
+        // または明示的に1.0を設定する場合:
+        groundObject_->SetScale({ 1.0f, 1.0f, 1.0f });
+        groundObject_->SetPosition({ 0.0f, -1.0f, 0.0f });
 
-    // より良い視覚効果のために地面オブジェクトのライティングを有効化
-    groundObject_->SetEnableLighting(true);
+        // より良い視覚効果のために地面オブジェクトのライティングを有効化
+        groundObject_->SetEnableLighting(true);
 
-    // プレイヤーの軌跡エフェクト用のパーティクルグループを作成
-    UnoEngine::GetInstance()->GetParticleManager()->CreateParticleGroup("playerTrail", "Resources/particle/smoke.png");
+        // プレイヤーの軌跡エフェクト用のパーティクルグループを作成
+        UnoEngine::GetInstance()->GetParticleManager()->CreateParticleGroup("playerTrail", "Resources/particle/smoke.png");
 
-    // プレイヤーの軌跡用パーティクルエミッタの初期化
-    trailEmitter_ = std::make_unique<ParticleEmitter>(
-        "playerTrail",                       // グループ名
-        Vector3(0.0f, 0.5f, 0.0f),          // 初期位置
-        3,                                  // 1回の発生で生成するパーティクル数
-        15.0f,                              // 発生率
-        Vector3(-0.1f, 0.05f, -0.1f),       // 最小速度
-        Vector3(0.1f, 0.2f, 0.1f),          // 最大速度
-        Vector3(0.0f, 0.0f, 0.0f),          // 最小加速度
-        Vector3(0.0f, 0.1f, 0.0f),          // 最大加速度
-        0.2f,                               // 最小開始サイズ
-        0.4f,                               // 最大開始サイズ
-        0.0f,                               // 最小終了サイズ
-        0.0f,                               // 最大終了サイズ
-        Vector4(0.8f, 0.8f, 1.0f, 0.8f),    // 最小開始色（薄い青）
-        Vector4(1.0f, 1.0f, 1.0f, 1.0f),    // 最大開始色（白）
-        Vector4(0.5f, 0.5f, 0.8f, 0.0f),    // 最小終了色（透明な青）
-        Vector4(0.7f, 0.7f, 1.0f, 0.0f),    // 最大終了色（透明な薄い青）
-        0.0f,                               // 最小回転角度
-        6.28f,                              // 最大回転角度（1周）
-        -1.0f,                              // 最小回転速度
-        1.0f,                               // 最大回転速度
-        0.3f,                               // 最小生存時間
-        0.8f                                // 最大生存時間
-    );
+        // プレイヤーの軌跡用パーティクルエミッタの初期化
+        trailEmitter_ = std::make_unique<ParticleEmitter>(
+            "playerTrail",                       // グループ名
+            Vector3(0.0f, 0.5f, 0.0f),          // 初期位置
+            3,                                  // 1回の発生で生成するパーティクル数
+            15.0f,                              // 発生率
+            Vector3(-0.1f, 0.05f, -0.1f),       // 最小速度
+            Vector3(0.1f, 0.2f, 0.1f),          // 最大速度
+            Vector3(0.0f, 0.0f, 0.0f),          // 最小加速度
+            Vector3(0.0f, 0.1f, 0.0f),          // 最大加速度
+            0.2f,                               // 最小開始サイズ
+            0.4f,                               // 最大開始サイズ
+            0.0f,                               // 最小終了サイズ
+            0.0f,                               // 最大終了サイズ
+            Vector4(0.8f, 0.8f, 1.0f, 0.8f),    // 最小開始色（薄い青）
+            Vector4(1.0f, 1.0f, 1.0f, 1.0f),    // 最大開始色（白）
+            Vector4(0.5f, 0.5f, 0.8f, 0.0f),    // 最小終了色（透明な青）
+            Vector4(0.7f, 0.7f, 1.0f, 0.0f),    // 最大終了色（透明な薄い青）
+            0.0f,                               // 最小回転角度
+            6.28f,                              // 最大回転角度（1周）
+            -1.0f,                              // 最小回転速度
+            1.0f,                               // 最大回転速度
+            0.3f,                               // 最小生存時間
+            0.8f                                // 最大生存時間
+        );
 
-    // UIスプライトの初期化
-    uiSprite_ = std::make_unique<Sprite>();
-    uiSprite_->Initialize(spriteCommon_, "Resources/textures/ui_game.png");
-    uiSprite_->SetPosition({ 100.0f, 50.0f });
-    uiSprite_->SetSize({ 200.0f, 100.0f });
+        // UIスプライトの初期化
+        uiSprite_ = std::make_unique<Sprite>();
+        uiSprite_->Initialize(spriteCommon_, "Resources/textures/ui_game.png");
+        uiSprite_->SetPosition({ 100.0f, 50.0f });
+        uiSprite_->SetSize({ 200.0f, 100.0f });
 
-    // マウス制御用の画面中央位置を取得
-    screenCenterX_ = WinApp::kClientWidth / 2;
-    screenCenterY_ = WinApp::kClientHeight / 2;
+        // マウス制御用の画面中央位置を取得
+        screenCenterX_ = WinApp::kClientWidth / 2;
+        screenCenterY_ = WinApp::kClientHeight / 2;
 
-    // FOVテキストスプライトの初期化
-    fovTextSprite_ = std::make_unique<Sprite>();
-    fovTextSprite_->Initialize(spriteCommon_, "Resources/textures/fov_text.png");
-    fovTextSprite_->SetPosition({ WinApp::kClientWidth - 180.0f, WinApp::kClientHeight - 50.0f });
-    fovTextSprite_->SetSize({ 160.0f, 40.0f });
+        // fov_text.pngが見つからないためデフォルトテクスチャを使用
+        // アプリケーションが使用するテクスチャが存在することを確認
+        const std::string fovTextPath = "Resources/textures/default_white.png";
+        if (!TextureManager::GetInstance()->IsTextureExists(fovTextPath)) {
+            TextureManager::GetInstance()->LoadDefaultTexture();
+        }
+
+        // FOVテキストスプライトの初期化（デフォルトテクスチャを使用）
+        fovTextSprite_ = std::make_unique<Sprite>();
+        fovTextSprite_->Initialize(spriteCommon_, TextureManager::GetInstance()->GetDefaultTexturePath());
+        fovTextSprite_->SetPosition({ WinApp::kClientWidth - 180.0f, WinApp::kClientHeight - 50.0f });
+        fovTextSprite_->SetSize({ 160.0f, 40.0f });
+        // 透明に設定（表示しない）
+        fovTextSprite_->setColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+    }
+    catch (const std::exception& e) {
+        OutputDebugStringA(("ERROR: GamePlayScene initialization failed: " + std::string(e.what()) + "\n").c_str());
+        return;
+    }
 
     // 初期化完了
     initialized_ = true;
+    OutputDebugStringA("GamePlayScene: Successfully initialized\n");
 }
 
 void GamePlayScene::Update() {
@@ -272,11 +293,16 @@ void GamePlayScene::UpdateCamera() {
         cameraPos.y += 1.7f; // 目の高さ
     }
     else {
-        // TPSモード - カメラはプレイヤーの後ろについていく
-        float distance = 10.0f; // 距離を5.0fから10.0fに増加
-        cameraPos.x = playerPos.x - sinf(cameraRotationY_) * distance;
-        cameraPos.y = playerPos.y + 3.0f; // 以前の2.0fよりやや高く
-        cameraPos.z = playerPos.z - cosf(cameraRotationY_) * distance;
+        // TPSモード - 球面座標を使って常にプレイヤーの中心を見るように計算
+        float distance = 50.0f;
+
+        // 縦回転（X軸）と横回転（Y軸）を両方考慮した球面座標計算
+        // X = centerX + distance * sin(yaw) * cos(pitch)
+        // Y = centerY + distance * sin(pitch)
+        // Z = centerZ + distance * cos(yaw) * cos(pitch)
+        cameraPos.x = playerPos.x - sinf(cameraRotationY_) * cosf(cameraRotationX_) * distance;
+        cameraPos.y = playerPos.y + sinf(cameraRotationX_) * distance;
+        cameraPos.z = playerPos.z - cosf(cameraRotationY_) * cosf(cameraRotationX_) * distance;
     }
 
     // カメラの位置と回転を更新
@@ -312,32 +338,46 @@ void GamePlayScene::Draw() {
     // 初期化されていない場合はスキップ
     if (!initialized_) return;
 
-    // 3Dオブジェクトの描画
-    playerObject_->Draw();
-    groundObject_->Draw();
+    try {
+        // 3Dオブジェクトの描画前にnullチェック
+        if (playerModel_ && playerObject_) {
+            playerObject_->Draw();
+        }
 
-    // スプライト共通設定をUIに設定
-    spriteCommon_->CommonDraw();
+        if (groundModel_ && groundObject_) {
+            groundObject_->Draw();
+        }
 
-    // UIの描画
-    uiSprite_->Draw();
+        // スプライト共通設定をUIに設定
+        spriteCommon_->CommonDraw();
 
-    // FOVテキストの描画
-    fovTextSprite_->Draw();
+        // UIの描画
+        if (uiSprite_) {
+            uiSprite_->Draw();
+        }
 
-    // ImGuiを使用して現在のFOV値とコントロールを表示
-    ImGui::Begin("ゲームコントロール");
-    ImGui::Text("FOV: %.1f 度", currentFovY_ * 57.3f); // ラジアンを度に変換
-    ImGui::Text("カメラモード: %s", isFPSMode_ ? "一人称視点" : "三人称視点");
-    ImGui::Separator();
-    ImGui::Text("操作方法:");
-    ImGui::Text("WASD - 移動");
-    ImGui::Text("スペース - ジャンプ");
-    ImGui::Text("F/G - FOV変更");
-    ImGui::Text("1 - カメラモード切替");
-    ImGui::Text("TAB - カーソル表示/非表示");
-    ImGui::Text("ESC - タイトルに戻る");
-    ImGui::End();
+        // FOVテキストの描画（透明に設定済みなので実質表示されない）
+        if (fovTextSprite_) {
+            fovTextSprite_->Draw();
+        }
+
+        // ImGuiを使用して現在のFOV値とコントロールを表示
+        ImGui::Begin("ゲームコントロール");
+        ImGui::Text("FOV: %.1f 度", currentFovY_ * 57.3f); // ラジアンを度に変換
+        ImGui::Text("カメラモード: %s", isFPSMode_ ? "一人称視点" : "三人称視点");
+        ImGui::Separator();
+        ImGui::Text("操作方法:");
+        ImGui::Text("WASD - 移動");
+        ImGui::Text("スペース - ジャンプ");
+        ImGui::Text("F/G - FOV変更");
+        ImGui::Text("1 - カメラモード切替");
+        ImGui::Text("TAB - カーソル表示/非表示");
+        ImGui::Text("ESC - タイトルに戻る");
+        ImGui::End();
+    }
+    catch (const std::exception& e) {
+        OutputDebugStringA(("ERROR: Exception in GamePlayScene::Draw: " + std::string(e.what()) + "\n").c_str());
+    }
 }
 
 void GamePlayScene::Finalize() {
