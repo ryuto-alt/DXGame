@@ -15,7 +15,6 @@ public:
 
     // Effect methods
     void UpdateTrailEffect();
-    void CreateJumpEffect(const Vector3& position);
 
     // Target settings
     void SetTargetPlayer(PlayerController* player) { targetPlayer_ = player; }
@@ -23,7 +22,6 @@ public:
 private:
     // Particle emitters
     std::unique_ptr<ParticleEmitter> trailEmitter_;
-    std::unique_ptr<ParticleEmitter> jumpEmitter_;
 
     // Effect parameters
     float trailOffsetDistance_ = 0.5f;

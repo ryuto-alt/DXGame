@@ -13,9 +13,13 @@ void CameraController::Initialize(Camera* camera, Input* input) {
     camera_ = camera;
     input_ = input;
 
-    // Set initial camera properties
+    // Set initial camera properties - 修正：視野角と描画範囲を調整
     camera_->SetFovY(initialFovY_);
     currentFovY_ = initialFovY_;
+
+    // 修正：ニアクリップとファークリップの値を適切に設定
+    camera_->SetNearClip(0.1f);  // 近すぎるとZ-fightingが発生するので少し離す
+    camera_->SetFarClip(1000.0f); // 十分に遠くまで描画できるように大きめの値を設定
 
     // Calculate screen center for mouse control
     screenCenterX_ = WinApp::kClientWidth / 2;
@@ -93,12 +97,18 @@ void CameraController::UpdateCameraPosition() {
     }
     else {
         // Third-person view: camera at distance from player
-        float distance = 50.0f;
+        // 修正：カメラの距離を調整して視界を確保
+        float distance = 20.0f;  // 50.0fから20.0fに変更
 
         // Calculate position using spherical coordinates
         cameraPos.x = targetPos.x - sinf(rotationY_) * cosf(rotationX_) * distance;
         cameraPos.y = targetPos.y + sinf(rotationX_) * distance;
         cameraPos.z = targetPos.z - cosf(rotationY_) * cosf(rotationX_) * distance;
+    }
+
+    // 修正：カメラが地面に埋まらないように調整
+    if (cameraPos.y < 1.0f) {
+        cameraPos.y = 1.0f;
     }
 
     // Update camera position
