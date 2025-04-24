@@ -1,5 +1,4 @@
 #pragma once
-
 // 基本システム
 #include "WinApp.h"
 #include "DirectXCommon.h"
@@ -15,6 +14,12 @@
 #include "Model.h"
 #include "ParticleManager.h"
 #include "ParticleEmitter.h"
+
+// 衝突判定関連
+#include "Collision.h"
+#include "CollisionPrimitive.h"
+#include "CollisionUtility.h"
+#include "CollisionManager.h"
 
 // オーディオ関連
 #include "AudioManager.h"
@@ -87,6 +92,9 @@ public:
 
     // オーディオマネージャーのアクセサ（シングルトン）
     AudioManager* GetAudioManager() const { return AudioManager::GetInstance(); }
+
+    // 衝突判定マネージャーのアクセサ（シングルトン）（追加）
+    Collision::CollisionManager* GetCollisionManager() const { return Collision::CollisionManager::GetInstance(); }
 
     // シーンファクトリーのセッター
     void SetSceneFactory(SceneFactory* sceneFactory);

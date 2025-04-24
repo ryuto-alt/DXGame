@@ -1,5 +1,3 @@
-// UnoEngine.cpp
-// DirectX12ゲームエンジン統合クラスの実装
 #include "UnoEngine.h"
 #include "GameSceneFactory.h" // 具象クラスはcppファイルでインクルード
 #include <cassert>
@@ -59,6 +57,9 @@ void UnoEngine::Initialize() {
         // 基本的なパーティクルグループの作成
         ParticleManager::GetInstance()->CreateParticleGroup("smoke", "Resources/particle/smoke.png");
 
+        // 衝突判定マネージャの初期化（特別な初期化は不要）
+        // すでにシングルトンパターンで実装されているため、呼び出すだけで初期化される
+
         // シーンマネージャーの取得と初期化
         SceneManager* sceneManager = SceneManager::GetInstance();
         sceneManager->SetDirectXCommon(dxCommon_.get());
@@ -103,6 +104,9 @@ void UnoEngine::Update() {
         // パーティクルマネージャの更新
         ParticleManager::GetInstance()->Update(camera_.get());
 
+        // 衝突判定マネージャの更新
+        Collision::CollisionManager::GetInstance()->Update(1.0f / 60.0f); // 60FPS想定
+
         // シーンマネージャーの更新
         SceneManager::GetInstance()->Update();
     }
@@ -146,6 +150,9 @@ void UnoEngine::Finalize() {
 
         // パーティクルマネージャーの終了処理
         ParticleManager::GetInstance()->Finalize();
+
+        // 衝突判定マネージャの終了処理
+        Collision::CollisionManager::GetInstance()->ClearColliders();
 
         // ImGuiの解放
         ImGui_ImplDX12_Shutdown();
