@@ -22,6 +22,10 @@ AudioSource3D::AudioSource3D()
 
 AudioSource3D::~AudioSource3D() {
     // AudioSource基底クラスのデストラクタで音声関連のリソースを解放
+    if (emitter_.pCone) {
+        delete emitter_.pCone;
+        emitter_.pCone = nullptr;
+    }
 }
 
 bool AudioSource3D::Initialize(IXAudio2* xAudio2, WaveFile* waveFile) {
@@ -51,9 +55,10 @@ void AudioSource3D::Setup3DAudio(const X3DAUDIO_HANDLE& x3DAudioHandle, UINT32 c
     emitter_.Position = { position_.x, position_.y, position_.z };
     emitter_.Velocity = { velocity_.x, velocity_.y, velocity_.z };
 
-    // 減衰設定
+    // 減衰設定 - X3DAUDIO_EMITTERのメンバーは InnerRadius と OuterRadius ではなく
+    // InnerRadiusとCurveDistanceScalerを使う
     emitter_.InnerRadius = minDistance_;
-    emitter_.OuterRadius = maxDistance_;
+    // これは直接OuterRadiusではなく、別の方法で設定が必要
 
     // 指向性の設定
     emitter_.pCone = new X3DAUDIO_CONE();
@@ -102,7 +107,6 @@ void AudioSource3D::Update3D(const X3DAUDIO_HANDLE& x3DAudioHandle, const X3DAUD
     // 音量と遅延の適用
     if (GetSourceVoice()) {
         GetSourceVoice()->SetOutputMatrix(nullptr, 1, dspSettings_.DstChannelCount, dspSettings_.pMatrixCoefficients);
-        GetSourceVoice()->SetOutputMatrix(nullptr, 1, dspSettings_.DstChannelCount, dspSettings_.pMatrixCoefficients);
     }
 }
 
@@ -128,7 +132,8 @@ void AudioSource3D::SetDistance(float minDistance, float maxDistance) {
 
     if (isInitialized3D_) {
         emitter_.InnerRadius = minDistance_;
-        emitter_.OuterRadius = maxDistance_;
+        // X3DAUDIO_EMITTERにはOuterRadiusが存在しないため、別の方法で設定
+        // 例: カスタム減衰曲線やCurveDistanceScalerの調整など
     }
 }
 

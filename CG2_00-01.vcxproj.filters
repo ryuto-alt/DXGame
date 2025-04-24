@@ -170,6 +170,9 @@
     <ClCompile Include="src\Engine\Audio\AudioBus.cpp">
       <Filter>src\engine\Audio</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Audio\AudioEvent.cpp">
+      <Filter>src\engine\Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
