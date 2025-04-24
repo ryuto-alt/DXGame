@@ -5,6 +5,15 @@
 #include <cmath>
 #include <cassert>
 
+
+float GetVectorComponent(const Vector3& vec, int index) {
+    switch (index) {
+    case 0: return vec.x;
+    case 1: return vec.y;
+    case 2: return vec.z;
+    default: return 0.0f; // エラー防止用
+    }
+}
 namespace Collision {
 
     //-----------------------------------------------------------------------------
@@ -888,7 +897,7 @@ namespace Collision {
                 );
 
                 // obb1の投影半径
-                float radius1 = obb1.size[i];
+                float radius1 = GetVectorComponent(obb1.size, i);
 
                 // obb2の投影半径
                 float radius2 =
@@ -938,7 +947,7 @@ namespace Collision {
                     obb1.size.z * std::abs(obb1.orientations[2].x * axis.x + obb1.orientations[2].y * axis.y + obb1.orientations[2].z * axis.z);
 
                 // obb2の投影半径
-                float radius2 = obb2.size[i];
+                float radius2 = GetVectorComponent(obb2.size, i);
 
                 // 投影半径の和と中心間距離を比較
                 float overlap = radius1 + radius2 - centerDistance;

@@ -3,6 +3,14 @@
 #include <algorithm>
 #include <limits>
 #include <cmath>
+float GetVectorComponent(const Vector3& vec, int index) {
+    switch (index) {
+    case 0: return vec.x;
+    case 1: return vec.y;
+    case 2: return vec.z;
+    default: return 0.0f; // エラー防止用
+    }
+}
 
 namespace Collision {
 
@@ -379,7 +387,7 @@ namespace Collision {
                 dir.z * obb_.orientations[i].z;
 
             // 範囲外ならfalse
-            if (std::abs(distance) > obb_.size[i]) {
+            if (std::abs(distance) > GetVectorComponent(obb_.size, i)) {
                 return false;
             }
         }
