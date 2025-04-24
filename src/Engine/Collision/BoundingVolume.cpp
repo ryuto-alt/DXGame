@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <limits>
 #include <cmath>
-float GetVectorComponent(const Vector3& vec, int index) {
+static float GetVectorComponent(const Vector3& vec, int index) {
     switch (index) {
     case 0: return vec.x;
     case 1: return vec.y;
