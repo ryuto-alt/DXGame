@@ -24,7 +24,7 @@ void GamePlayScene::Initialize() {
     camera_->SetAspectRatio(static_cast<float>(WinApp::kClientWidth) / static_cast<float>(WinApp::kClientHeight));
     // ニアクリップとファークリップの設定を追加
     camera_->SetNearClip(1.5f);  // 小さすぎる値を避ける
-    camera_->SetFarClip(100.0f);
+    camera_->SetFarClip(1000.0f);
     camera_->Update();
 
     // プレイヤーモデルの読み込み
