@@ -226,6 +226,61 @@ void UnoEngine::InitializeImGui() {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGui::StyleColorsDark();
+
+        // ImGuiのIO設定を取得
+        ImGuiIO& io = ImGui::GetIO();
+
+        // 日本語フォント設定
+        ImFontConfig fontConfig;
+        fontConfig.MergeMode = true;  // 既存のフォントと統合
+
+        // 日本語フォントのパス（例：MS Gothic）
+        // Windows標準フォントを使用
+        const char* fontPath = "C:\\Windows\\Fonts\\msgothic.ttc";
+
+        // 日本語の文字範囲を指定
+        static const ImWchar japaneseFontRanges[] = {
+            0x0020, 0x00FF, // 基本ラテン文字
+            0x3000, 0x30FF, // 日本語（平仮名、カタカナ）
+            0x31F0, 0x31FF, // カタカナ拡張
+            0xFF00, 0xFFEF, // 全角文字
+            0x4E00, 0x9FAF, // CJK統合漢字
+            0,
+        };
+
+        // デフォルトフォント読み込み
+        io.Fonts->AddFontDefault();
+
+        // 日本語フォント読み込み
+        io.Fonts->AddFontFromFileTTF(fontPath, 16.0f, &fontConfig, japaneseFontRanges);
+
+        // ファイルが見つからない場合のフォールバック処理
+        if (!io.Fonts->Fonts.Size || io.Fonts->Fonts.Size <= 1) {
+            // デフォルトフォントのみの場合は警告を出力
+            OutputDebugStringA("WARNING: 日本語フォントが読み込めませんでした。フォールバックフォントを使用します。\n");
+
+            // フォールバックフォントとしてWindows標準のフォントを試行
+            const char* fallbackFonts[] = {
+                "C:\\Windows\\Fonts\\meiryo.ttc",
+                "C:\\Windows\\Fonts\\msgothic.ttc",
+                "C:\\Windows\\Fonts\\YuGothM.ttc"
+            };
+
+            for (const char* fallbackFont : fallbackFonts) {
+                io.Fonts->AddFontFromFileTTF(fallbackFont, 16.0f, &fontConfig, japaneseFontRanges);
+                if (io.Fonts->Fonts.Size > 1) {
+                    OutputDebugStringA(("日本語フォールバックフォントを読み込みました: " + std::string(fallbackFont) + "\n").c_str());
+                    break;
+                }
+            }
+        }
+        else {
+            OutputDebugStringA("日本語フォントが正常に読み込まれました。\n");
+        }
+
+        // フォントテクスチャをビルド
+        io.Fonts->Build();
+
         ImGui_ImplWin32_Init(winApp_->GetHwnd());
 
         // SrvManagerのディスクリプタヒープを使用
