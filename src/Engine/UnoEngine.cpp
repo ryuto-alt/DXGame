@@ -56,6 +56,9 @@ void UnoEngine::Initialize() {
         // パーティクルマネージャの初期化
         ParticleManager::GetInstance()->Initialize(dxCommon_.get(), srvManager_.get());
 
+        // 衝突判定マネージャの初期化（追加）
+        CollisionManager::GetInstance()->Initialize();
+
         // 基本的なパーティクルグループの作成
         ParticleManager::GetInstance()->CreateParticleGroup("smoke", "Resources/particle/smoke.png");
 
@@ -99,6 +102,10 @@ void UnoEngine::Update() {
 
         // カメラの更新
         camera_->Update();
+
+        // 衝突判定マネージャの更新（追加）
+        CollisionManager::GetInstance()->Update();
+        CollisionManager::GetInstance()->CheckAllCollisions();
 
         // パーティクルマネージャの更新
         ParticleManager::GetInstance()->Update(camera_.get());
@@ -146,6 +153,9 @@ void UnoEngine::Finalize() {
 
         // パーティクルマネージャーの終了処理
         ParticleManager::GetInstance()->Finalize();
+
+        // 衝突判定マネージャクリア（追加）
+        CollisionManager::GetInstance()->ClearColliders();
 
         // ImGuiの解放
         ImGui_ImplDX12_Shutdown();

@@ -4,14 +4,18 @@
 #include "Vector3.h"
 #include "math.h"
 #include "Camera.h"
+#include "CollisionTypes.h"
+#include "PhysicsBody.h" // 物理ボディを追加
 
 #include <d3d12.h>
 #include <wrl.h>
 #include <memory>
+#include <vector>
 
 class DirectXCommon;
 class SpriteCommon;
 class Camera;
+class ColliderBase;
 
 // 3Dオブジェクトクラス
 class Object3d {
@@ -36,6 +40,8 @@ public:
 
     // カメラを使用するUpdateメソッド
     void Update();
+    // 物理更新を含むUpdateメソッド
+    void PhysicsUpdate(float deltaTime);
 
     // 座標の設定
     void SetPosition(const Vector3& position) { transform_.translate = position; }
@@ -60,6 +66,18 @@ public:
     // ライトの設定
     void SetDirectionalLight(const DirectionalLight& light) { *directionalLightData_ = light; }
     const DirectionalLight& GetDirectionalLight() const { return *directionalLightData_; }
+
+    // コライダー関連の機能
+    void AddCollider(ColliderBase* collider);
+    void RemoveCollider(ColliderBase* collider);
+    const std::vector<ColliderBase*>& GetColliders() const { return colliders_; }
+    void SetOnCollisionCallback(const CollisionCallback& callback) { onCollision_ = callback; }
+    void OnCollision(const CollisionInfo& info);
+
+    // 物理関連の機能
+    PhysicsBody* GetPhysicsBody() { return physicsBody_.get(); }
+    void EnablePhysics(bool enable = true); // 物理を有効/無効にする
+    bool IsPhysicsEnabled() const { return physicsEnabled_; }
 
 private:
     // モデル
@@ -90,4 +108,14 @@ private:
 
     // カメラへの参照
     Camera* camera_ = nullptr;
+
+    // コライダーリスト
+    std::vector<ColliderBase*> colliders_;
+    // 衝突時のコールバック
+    CollisionCallback onCollision_;
+
+    // 物理ボディ
+    std::unique_ptr<PhysicsBody> physicsBody_;
+    // 物理有効フラグ
+    bool physicsEnabled_ = false;
 };

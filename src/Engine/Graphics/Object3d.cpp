@@ -1,10 +1,9 @@
-// src/Engine/Graphics/Object3d.cpp
 #include "Object3d.h"
 #include "DirectXCommon.h"
 #include "SpriteCommon.h"
 #include "Math.h"
 #include "TextureManager.h"
-
+#include "CollisionManager.h"
 
 Object3d::Object3d() : model_(nullptr), dxCommon_(nullptr), spriteCommon_(nullptr),
 materialData_(nullptr), transformationMatrixData_(nullptr), directionalLightData_(nullptr),
@@ -13,9 +12,22 @@ camera_(nullptr) {
     transform_.scale = { 1.0f, 1.0f, 1.0f };
     transform_.rotate = { 0.0f, 0.0f, 0.0f };
     transform_.translate = { 0.0f, 0.0f, 0.0f };
+
+    // 物理ボディの作成
+    physicsBody_ = std::make_unique<PhysicsBody>();
 }
 
-Object3d::~Object3d() {}
+Object3d::~Object3d() {
+    // コライダーの削除
+    for (auto* collider : colliders_) {
+        // CollisionManagerからコライダーを削除
+        CollisionManager::GetInstance()->RemoveCollider(collider);
+        delete collider;
+    }
+    colliders_.clear();
+
+    // 物理ボディはスマートポインタで自動解放
+}
 
 void Object3d::Initialize(DirectXCommon* dxCommon, SpriteCommon* spriteCommon) {
     assert(dxCommon);
@@ -45,6 +57,9 @@ void Object3d::Initialize(DirectXCommon* dxCommon, SpriteCommon* spriteCommon) {
     directionalLightData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
     directionalLightData_->direction = { 0.0f, -1.0f, 0.0f };
     directionalLightData_->intensity = 1.0f;
+
+    // 物理ボディの初期化
+    physicsBody_->Initialize(this);
 }
 
 void Object3d::SetModel(Model* model) {
@@ -103,6 +118,13 @@ void Object3d::Update(const Matrix4x4& viewMatrix, const Matrix4x4& projectionMa
     // 行列の更新
     transformationMatrixData_->WVP = worldViewProjectionMatrix;
     transformationMatrixData_->World = worldMatrix;
+
+    // コライダーの更新
+    for (auto* collider : colliders_) {
+        if (collider) {
+            collider->Update();
+        }
+    }
 }
 
 // カメラセッター
@@ -137,6 +159,25 @@ void Object3d::Update() {
     // 行列の更新
     transformationMatrixData_->WVP = worldViewProjectionMatrix;
     transformationMatrixData_->World = worldMatrix;
+
+    // コライダーの更新
+    for (auto* collider : colliders_) {
+        if (collider) {
+            collider->Update();
+        }
+    }
+}
+
+// 物理更新を含むUpdateメソッド
+void Object3d::PhysicsUpdate(float deltaTime) {
+    // 物理シミュレーションが有効な場合のみ
+    if (physicsEnabled_ && physicsBody_) {
+        // 物理ボディの更新
+        physicsBody_->Update(deltaTime);
+    }
+
+    // 通常の更新処理
+    Update();
 }
 
 void Object3d::Draw() {
@@ -205,4 +246,56 @@ void Object3d::Draw() {
 
     // 描画
     dxCommon_->GetCommandList()->DrawInstanced(model_->GetVertexCount(), 1, 0, 0);
+}
+
+// コライダーの追加メソッド
+void Object3d::AddCollider(ColliderBase* collider) {
+    // コライダーの親オブジェクトを設定
+    collider->SetParentObject(this);
+
+    // コライダーの初期化
+    collider->Initialize();
+
+    // コライダーリストに追加
+    colliders_.push_back(collider);
+
+    // CollisionManagerに登録
+    CollisionManager::GetInstance()->AddCollider(collider);
+}
+
+// コライダーの削除メソッド
+void Object3d::RemoveCollider(ColliderBase* collider) {
+    // コライダーリストから削除
+    auto it = std::find(colliders_.begin(), colliders_.end(), collider);
+    if (it != colliders_.end()) {
+        // CollisionManagerからも削除
+        CollisionManager::GetInstance()->RemoveCollider(collider);
+
+        // コライダーを削除
+        delete* it;
+        colliders_.erase(it);
+    }
+}
+
+// 衝突時のコールバック
+void Object3d::OnCollision(const CollisionInfo& info) {
+    // コールバックが設定されていれば呼び出す
+    if (onCollision_) {
+        onCollision_(info);
+    }
+
+    // 物理処理が有効なら物理ボディにも通知
+    if (physicsEnabled_ && physicsBody_) {
+        physicsBody_->OnCollision(info);
+    }
+}
+
+// 物理を有効/無効にする
+void Object3d::EnablePhysics(bool enable) {
+    physicsEnabled_ = enable;
+
+    // 物理を有効にする場合、物理ボディが初期化されていることを確認
+    if (enable && physicsBody_) {
+        physicsBody_->Initialize(this);
+    }
 }

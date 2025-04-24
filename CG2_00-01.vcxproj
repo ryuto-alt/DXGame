@@ -57,7 +57,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)src\Engine\Graphics;$(ProjectDir)src\Engine\Math;$(ProjectDir)src\Engine\Input;$(ProjectDir)src\Engine\Utility;$(ProjectDir)imgui;$(ProjectDir)externals\DirectXTex;$(ProjectDir)src\Engine\Camera;$(ProjectDir)src\Engine\Particle;$(ProjectDir)src\Engine\Audio;$(ProjectDir)src\Engine\core;$(ProjectDir)src\Game\scene;$(ProjectDir)src\Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\Engine\Graphics;$(ProjectDir)src\Engine\Math;$(ProjectDir)src\Engine\Input;$(ProjectDir)src\Engine\Utility;$(ProjectDir)imgui;$(ProjectDir)externals\DirectXTex;$(ProjectDir)src\Engine\Camera;$(ProjectDir)src\Engine\Particle;$(ProjectDir)src\Engine\Audio;$(ProjectDir)src\Engine\core;$(ProjectDir)src\Game\scene;$(ProjectDir)src\Engine;$(ProjectDir)src\Engine\Collision;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,7 +82,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)src\Engine\Graphics;$(ProjectDir)src\Engine\Math;$(ProjectDir)src\Engine\Input;$(ProjectDir)src\Engine\Utility;$(ProjectDir)imgui;$(ProjectDir)externals\DirectXTex;$(ProjectDir)src\Engine\Camera;$(ProjectDir)src\Engine\Particle;$(ProjectDir)src\Engine\Audio;$(ProjectDir)src\Engine\core;$(ProjectDir)src\Game\scene;$(ProjectDir)src\Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\Engine\Graphics;$(ProjectDir)src\Engine\Math;$(ProjectDir)src\Engine\Input;$(ProjectDir)src\Engine\Utility;$(ProjectDir)imgui;$(ProjectDir)externals\DirectXTex;$(ProjectDir)src\Engine\Camera;$(ProjectDir)src\Engine\Particle;$(ProjectDir)src\Engine\Audio;$(ProjectDir)src\Engine\core;$(ProjectDir)src\Game\scene;$(ProjectDir)src\Engine;$(ProjectDir)src\Engine\Collision;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -109,6 +109,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\Engine\Audio\Mp3File.cpp" />
     <ClCompile Include="src\Engine\Audio\WaveFile.cpp" />
     <ClCompile Include="src\Engine\Camera\Camera.cpp" />
+    <ClCompile Include="src\Engine\Collision\BoxCollider.cpp" />
+    <ClCompile Include="src\Engine\Collision\CollisionManager.cpp" />
+    <ClCompile Include="src\Engine\Collision\CollisionVisualizer.cpp" />
+    <ClCompile Include="src\Engine\Collision\PhysicsBody.cpp" />
+    <ClCompile Include="src\Engine\Collision\SphereCollider.cpp" />
     <ClCompile Include="src\Engine\Core\Framework.cpp" />
     <ClCompile Include="src\Engine\Graphics\D3DResourceCheck.cpp" />
     <ClCompile Include="src\Engine\Graphics\DirectXCommon.cpp" />
@@ -149,6 +154,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\Engine\Audio\Mp3File.h" />
     <ClInclude Include="src\Engine\Audio\WaveFile.h" />
     <ClInclude Include="src\Engine\Camera\Camera.h" />
+    <ClInclude Include="src\Engine\Collision\BoxCollider.h" />
+    <ClInclude Include="src\Engine\Collision\ColliderBase.h" />
+    <ClInclude Include="src\Engine\Collision\CollisionManager.h" />
+    <ClInclude Include="src\Engine\Collision\CollisionTypes.h" />
+    <ClInclude Include="src\Engine\Collision\CollisionUtils.h" />
+    <ClInclude Include="src\Engine\Collision\CollisionVisualizer.h" />
+    <ClInclude Include="src\Engine\Collision\PhysicsBody.h" />
+    <ClInclude Include="src\Engine\Collision\SphereCollider.h" />
     <ClInclude Include="src\Engine\Core\Framework.h" />
     <ClInclude Include="src\Engine\Graphics\D3DResourceCheck.h" />
     <ClInclude Include="src\Engine\Graphics\DirectXCommon.h" />

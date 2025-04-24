@@ -51,6 +51,9 @@
     <Filter Include="src\Game\SceneConfig">
       <UniqueIdentifier>{fff665b8-c66d-4193-8f24-bb28b7767e7f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\engine\Collision">
+      <UniqueIdentifier>{86a0c479-653a-4669-b2ad-96cce0504077}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -163,6 +166,21 @@
     </ClCompile>
     <ClCompile Include="src\Game\scene\GameSceneFactory.cpp">
       <Filter>src\Game\SceneConfig</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Collision\SphereCollider.cpp">
+      <Filter>src\engine\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Collision\BoxCollider.cpp">
+      <Filter>src\engine\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Collision\CollisionManager.cpp">
+      <Filter>src\engine\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Collision\CollisionVisualizer.cpp">
+      <Filter>src\engine\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Collision\PhysicsBody.cpp">
+      <Filter>src\engine\Collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -297,6 +315,30 @@
     </ClInclude>
     <ClInclude Include="src\Game\scene\GameSceneFactory.h">
       <Filter>src\Game\SceneConfig</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Collision\CollisionTypes.h">
+      <Filter>src\engine\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Collision\ColliderBase.h">
+      <Filter>src\engine\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Collision\SphereCollider.h">
+      <Filter>src\engine\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Collision\BoxCollider.h">
+      <Filter>src\engine\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Collision\CollisionManager.h">
+      <Filter>src\engine\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Collision\CollisionUtils.h">
+      <Filter>src\engine\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Collision\CollisionVisualizer.h">
+      <Filter>src\engine\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Collision\PhysicsBody.h">
+      <Filter>src\engine\Collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
