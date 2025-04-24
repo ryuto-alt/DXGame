@@ -164,6 +164,12 @@
     <ClCompile Include="src\Game\scene\GameSceneFactory.cpp">
       <Filter>src\Game\SceneConfig</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Audio\AudioSource3D.cpp">
+      <Filter>src\engine\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Audio\AudioBus.cpp">
+      <Filter>src\engine\Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -297,6 +303,15 @@
     </ClInclude>
     <ClInclude Include="src\Game\scene\GameSceneFactory.h">
       <Filter>src\Game\SceneConfig</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Audio\AudioSource3D.h">
+      <Filter>src\engine\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Audio\AudioBus.h">
+      <Filter>src\engine\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Audio\AudioEvent.h">
+      <Filter>src\engine\Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

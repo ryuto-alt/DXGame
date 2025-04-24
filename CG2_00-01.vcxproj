@@ -104,8 +104,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Engine\Audio\AudioBus.cpp" />
     <ClCompile Include="src\Engine\Audio\AudioManager.cpp" />
     <ClCompile Include="src\Engine\Audio\AudioSource.cpp" />
+    <ClCompile Include="src\Engine\Audio\AudioSource3D.cpp" />
     <ClCompile Include="src\Engine\Audio\Mp3File.cpp" />
     <ClCompile Include="src\Engine\Audio\WaveFile.cpp" />
     <ClCompile Include="src\Engine\Camera\Camera.cpp" />
@@ -144,8 +146,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\Engine\Audio\AudioBus.h" />
+    <ClInclude Include="src\Engine\Audio\AudioEvent.h" />
     <ClInclude Include="src\Engine\Audio\AudioManager.h" />
     <ClInclude Include="src\Engine\Audio\AudioSource.h" />
+    <ClInclude Include="src\Engine\Audio\AudioSource3D.h" />
     <ClInclude Include="src\Engine\Audio\Mp3File.h" />
     <ClInclude Include="src\Engine\Audio\WaveFile.h" />
     <ClInclude Include="src\Engine\Camera\Camera.h" />
