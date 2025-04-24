@@ -179,6 +179,9 @@
     <ClCompile Include="src\Engine\Collision\MeshCollider.cpp">
       <Filter>src\engine\Collision</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Collision\CollisionManager.cpp">
+      <Filter>src\engine\Collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -323,6 +326,9 @@
       <Filter>src\engine\Collision</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Collision\MeshCollider.h">
+      <Filter>src\engine\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Collision\CollisionManager.h">
       <Filter>src\engine\Collision</Filter>
     </ClInclude>
   </ItemGroup>
