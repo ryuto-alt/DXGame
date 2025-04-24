@@ -1,7 +1,7 @@
 // UnoEngine.cpp
 // DirectX12ゲームエンジン統合クラスの実装
 #include "UnoEngine.h"
-#include "GameSceneFactory.h" // 具象クラスはcppファイルでインクルード
+#include "GameSceneFactory.h"
 #include <cassert>
 
 // 静的メンバ変数の実体化

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "UnoEngine.h"
 
 class GamePlayScene : public IScene {
