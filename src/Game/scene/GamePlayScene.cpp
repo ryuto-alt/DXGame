@@ -18,12 +18,11 @@ void GamePlayScene::Initialize() {
     assert(camera_);
     assert(winApp_); // winApp_が設定されていることを確認
 
-    // カメラの初期設定（修正：上方向をY軸に合わせる）
-    camera_->SetTranslate({ 0.0f, 2.0f, -5.0f });
+    // カメラの初期設定
+    camera_->SetTranslate({ 0.0f, 2.0f, -20.0f });
     camera_->SetFovY(0.45f); // 視野角を設定（約26度）
     camera_->SetAspectRatio(static_cast<float>(WinApp::kClientWidth) / static_cast<float>(WinApp::kClientHeight));
-    camera_->SetNearClip(0.1f);
-    camera_->SetFarClip(100.0f);
+
     camera_->Update();
 
     // プレイヤーモデルの読み込み
@@ -37,7 +36,7 @@ void GamePlayScene::Initialize() {
     playerObject_->SetModel(playerModel_.get());
     playerObject_->SetPosition({ 0.0f, 1.0f, 0.0f });
     playerObject_->SetScale({ 1.0f, 1.0f, 1.0f });
-    playerObject_->Update();
+    playerObject_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // 不透明度を1.0に設定
 
     // ステージモデルの読み込み
     stageModel_ = std::make_unique<Model>();
@@ -49,7 +48,11 @@ void GamePlayScene::Initialize() {
     stageObject_->Initialize(dxCommon_, spriteCommon_);
     stageObject_->SetModel(stageModel_.get());
     stageObject_->SetPosition({ 0.0f, 0.0f, 0.0f });
-    stageObject_->SetScale({ 5.0f, 1.0f, 5.0f }); // ステージのサイズを大きくする
+    stageObject_->SetScale({ 1.0f, 1.0f, 1.0f }); // ステージのサイズを大きくする
+    stageObject_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // 不透明度を1.0に設定
+
+    // オブジェクトの更新
+    playerObject_->Update();
     stageObject_->Update();
 
     // プレイヤーの衝突判定用コライダーを追加
@@ -280,7 +283,7 @@ void GamePlayScene::UpdateCamera() {
     // 目標カメラ位置を計算
     Vector3 targetCameraPos;
 
-    // 修正: Z軸とX軸の符号を調整（DirectXの座標系に合わせる）
+    // DirectXの座標系に合わせる
     if (thirdPersonCamera_) {
         // 三人称視点 - カメラの角度に基づいた位置計算
         float camX = playerPos.x - std::sin(cameraYaw_) * std::cos(cameraPitch_) * cameraDistance_;
@@ -311,7 +314,6 @@ void GamePlayScene::UpdateCamera() {
     camera_->SetTranslate(newCameraPos);
 
     // カメラの向きを更新（修正：正しい回転順序を設定）
-    // DirectXの座標系ではY軸が上、X軸が右、Z軸が奥行き
     camera_->SetRotate({ cameraPitch_, cameraYaw_, 0.0f });
 
     // カメラの更新を適用
@@ -321,6 +323,11 @@ void GamePlayScene::UpdateCamera() {
 void GamePlayScene::Draw() {
     // 初期化されていない場合はスキップ
     if (!initialized_) return;
+
+    // SRVヒープを描画前に設定
+    if (srvManager_) {
+        srvManager_->PreDraw();
+    }
 
     // オブジェクトの描画
     playerObject_->Draw();
