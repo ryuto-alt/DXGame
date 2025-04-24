@@ -109,6 +109,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\Engine\Audio\Mp3File.cpp" />
     <ClCompile Include="src\Engine\Audio\WaveFile.cpp" />
     <ClCompile Include="src\Engine\Camera\Camera.cpp" />
+    <ClCompile Include="src\Engine\Collision\BoundingVolume.cpp" />
+    <ClCompile Include="src\Engine\Collision\Collision.cpp" />
+    <ClCompile Include="src\Engine\Collision\CollisionPrimitive.cpp" />
+    <ClCompile Include="src\Engine\Collision\MeshCollider.cpp" />
     <ClCompile Include="src\Engine\Core\Framework.cpp" />
     <ClCompile Include="src\Engine\Graphics\D3DResourceCheck.cpp" />
     <ClCompile Include="src\Engine\Graphics\DirectXCommon.cpp" />
@@ -149,6 +153,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\Engine\Audio\Mp3File.h" />
     <ClInclude Include="src\Engine\Audio\WaveFile.h" />
     <ClInclude Include="src\Engine\Camera\Camera.h" />
+    <ClInclude Include="src\Engine\Collision\BoundingVolume.h" />
+    <ClInclude Include="src\Engine\Collision\Collision.h" />
+    <ClInclude Include="src\Engine\Collision\CollisionPrimitive.h" />
+    <ClInclude Include="src\Engine\Collision\MeshCollider.h" />
     <ClInclude Include="src\Engine\Core\Framework.h" />
     <ClInclude Include="src\Engine\Graphics\D3DResourceCheck.h" />
     <ClInclude Include="src\Engine\Graphics\DirectXCommon.h" />
