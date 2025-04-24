@@ -229,77 +229,76 @@ bool TriangleMeshCollider::Intersects(const Sphere& sphere, CollisionResult* res
         // 球の半径も考慮する必要がある
         // 簡易的な判定のためここでは省略
     }
-    
+
     bool hasCollision = false;
     float minPenetration = std::numeric_limits<float>::max();
-    CollisionResult tempResult;
-    
+
     // 各三角形との衝突判定
     for (const auto& triangle : triangles_) {
         // 三角形の法線を計算
         Vector3 normal = triangle.ComputeNormal();
-        
+
         // 三角形の平面を作成
         Plane plane = Plane::CreateFromPointNormal(triangle.vertices[0], normal);
-        
+
         // 球の中心と平面の距離
-        float distance = 
-            normal.x * sphere.center.x + 
-            normal.y * sphere.center.y + 
-            normal.z * sphere.center.z + 
+        float distance =
+            normal.x * sphere.center.x +
+            normal.y * sphere.center.y +
+            normal.z * sphere.center.z +
             plane.distance;
-        
+
         // 距離が半径より大きければ衝突していない
         if (std::abs(distance) > sphere.radius) {
             continue;
         }
-        
+
         // 衝突点を計算（球の中心から平面に下ろした垂線の足）
         Vector3 pointOnPlane = {
             sphere.center.x - normal.x * distance,
             sphere.center.y - normal.y * distance,
             sphere.center.z - normal.z * distance
         };
-        
+
         // 点が三角形内にあるか確認
         Vector3 edge1 = {
             triangle.vertices[1].x - triangle.vertices[0].x,
             triangle.vertices[1].y - triangle.vertices[0].y,
             triangle.vertices[1].z - triangle.vertices[0].z
         };
-        
+
         Vector3 edge2 = {
             triangle.vertices[2].x - triangle.vertices[0].x,
             triangle.vertices[2].y - triangle.vertices[0].y,
             triangle.vertices[2].z - triangle.vertices[0].z
         };
-        
+
         Vector3 vp = {
             pointOnPlane.x - triangle.vertices[0].x,
             pointOnPlane.y - triangle.vertices[0].y,
             pointOnPlane.z - triangle.vertices[0].z
         };
-        
+
         // 内積を計算
         float d00 = edge1.x * edge1.x + edge1.y * edge1.y + edge1.z * edge1.z;
         float d01 = edge1.x * edge2.x + edge1.y * edge2.y + edge1.z * edge2.z;
         float d11 = edge2.x * edge2.x + edge2.y * edge2.y + edge2.z * edge2.z;
         float d20 = vp.x * edge1.x + vp.y * edge1.y + vp.z * edge1.z;
         float d21 = vp.x * edge2.x + vp.y * edge2.y + vp.z * edge2.z;
-        
+
         float denom = d00 * d11 - d01 * d01;
         float v = (d11 * d20 - d01 * d21) / denom;
         float w = (d00 * d21 - d01 * d20) / denom;
         float u = 1.0f - v - w;
-        
+
         // 三角形内の場合の処理
         if (u >= 0.0f && u <= 1.0f && v >= 0.0f && v <= 1.0f && w >= 0.0f && w <= 1.0f) {
             hasCollision = true;
             float penetration = sphere.radius - std::abs(distance);
-            
+
             if (penetration < minPenetration) {
                 minPenetration = penetration;
-                
+
                 if (result) {
                     result->hasCollision = true;
                     result->collisionPoint = pointOnPlane;
@@ -310,12 +309,12 @@ bool TriangleMeshCollider::Intersects(const Sphere& sphere, CollisionResult* res
         }
         else {
             // 三角形の頂点または辺に最も近い点を見つける
-            
+
             // TODO: 辺や頂点との最近接点を計算して追加
             // 簡略化のため省略
         }
     }
-    
+
     return hasCollision;
 }
 
@@ -782,83 +781,82 @@ bool HeightfieldCollider::Intersects(const Line& line, CollisionResult* result) 
 bool HeightfieldCollider::Intersects(const Ray& ray, float maxDistance, CollisionResult* result) const {
     // まず境界ボリュームで高速判定
     // 現在はシンプル化のため省略
-    
-    // 指定された座標にある三角形を取得
+
+    // 三角形を格納する変数を先に宣言
     Triangle triangle1, triangle2;
-    
+
     // 地形の各グリッドセルを調査
     for (int x = 0; x < width_ - 1; x++) {
         for (int z = 0; z < height_ - 1; z++) {
-            if (GetTrianglesAt(x, z, &triangle1, &triangle2)) {
+            if (GetTrianglesAt(static_cast<float>(x), static_cast<float>(z), &triangle1, &triangle2)) {
                 // 各三角形との交差判定
                 TriangleMeshCollider tempCollider;
-                
+
                 tempCollider.AddTriangle(triangle1);
-                if (triangle2.vertices[0].x != triangle2.vertices[1].x || 
-                    triangle2.vertices[0].y != triangle2.vertices[1].y || 
+                if (triangle2.vertices[0].x != triangle2.vertices[1].x ||
+                    triangle2.vertices[0].y != triangle2.vertices[1].y ||
                     triangle2.vertices[0].z != triangle2.vertices[1].z) {
                     tempCollider.AddTriangle(triangle2);
                 }
-                
+
+                // 直接 result を渡す
                 if (tempCollider.Intersects(ray, maxDistance, result)) {
                     return true;
                 }
             }
         }
     }
-    
+
     return false;
 }
 
 bool HeightfieldCollider::Intersects(const Sphere& sphere, CollisionResult* result) const {
-    // まず境界ボリュームで高速判定
-    // 現在はシンプル化のため省略
-    
     // 球の中心座標
     float x = sphere.center.x / scaleX_;
     float z = sphere.center.z / scaleZ_;
-    
+
     // 球の影響範囲
     int startX = std::max(0, static_cast<int>(x - sphere.radius / scaleX_));
     int endX = std::min(width_ - 2, static_cast<int>(x + sphere.radius / scaleX_));
     int startZ = std::max(0, static_cast<int>(z - sphere.radius / scaleZ_));
     int endZ = std::min(height_ - 2, static_cast<int>(z + sphere.radius / scaleZ_));
-    
+
     bool hasCollision = false;
     float minPenetration = std::numeric_limits<float>::max();
-    CollisionResult tempResult;
-    
+
     // 範囲内の各グリッドセルを調査
     for (int gx = startX; gx <= endX; gx++) {
         for (int gz = startZ; gz <= endZ; gz++) {
             Triangle triangle1, triangle2;
-            
-            if (GetTrianglesAt(gx, gz, &triangle1, &triangle2)) {
+
+            if (GetTrianglesAt(static_cast<float>(gx), static_cast<float>(gz), &triangle1, &triangle2)) {
                 // 各三角形との交差判定
                 TriangleMeshCollider tempCollider;
-                
+
                 tempCollider.AddTriangle(triangle1);
-                if (triangle2.vertices[0].x != triangle2.vertices[1].x || 
-                    triangle2.vertices[0].y != triangle2.vertices[1].y || 
+                if (triangle2.vertices[0].x != triangle2.vertices[1].x ||
+                    triangle2.vertices[0].y != triangle2.vertices[1].y ||
                     triangle2.vertices[0].z != triangle2.vertices[1].z) {
                     tempCollider.AddTriangle(triangle2);
                 }
-                
-                if (tempCollider.Intersects(sphere, &tempResult)) {
+
+                // 一時的な結果を保存するための変数
+                CollisionResult localResult;
+                if (tempCollider.Intersects(sphere, &localResult)) {
                     hasCollision = true;
-                    
-                    if (tempResult.penetration < minPenetration) {
-                        minPenetration = tempResult.penetration;
-                        
+
+                    if (localResult.penetration < minPenetration) {
+                        minPenetration = localResult.penetration;
+
                         if (result) {
-                            *result = tempResult;
+                            *result = localResult;
                         }
                     }
                 }
             }
         }
     }
-    
+
     return hasCollision;
 }
 
