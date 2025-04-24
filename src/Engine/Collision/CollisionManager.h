@@ -37,8 +37,8 @@ private:
     std::vector<ColliderBase*> colliders_;
 
     // レイヤーマスク（衝突判定フィルタリング用）
-    using LayerMask = std::array<bool, static_cast<size_t>(CollisionLayer::MaxLayers)>;
-    std::array<LayerMask, static_cast<size_t>(CollisionLayer::MaxLayers)> collisionMatrix_;
+    // 単純な2次元配列として実装
+    bool collisionMatrix_[32][32];  // MaxLayersは32
 
     // コライダーのレイヤーマップ
     std::unordered_map<ColliderBase*, CollisionLayer> colliderLayers_;

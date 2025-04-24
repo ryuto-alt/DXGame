@@ -65,10 +65,10 @@ bool BoxCollider::CheckBoxToBox(BoxCollider* other, CollisionInfo& info) {
         // 衝突情報を設定
         info.isColliding = true;
 
-        // めり込み量が最小の軸を特定
-        float overlapDistX = std::min(max1.x - min2.x, max2.x - min1.x);
-        float overlapDistY = std::min(max1.y - min2.y, max2.y - min1.y);
-        float overlapDistZ = std::min(max1.z - min2.z, max2.z - min1.z);
+        // めり込み量が最小の軸を特定（std::minを使わない版）
+        float overlapDistX = (max1.x - min2.x < max2.x - min1.x) ? (max1.x - min2.x) : (max2.x - min1.x);
+        float overlapDistY = (max1.y - min2.y < max2.y - min1.y) ? (max1.y - min2.y) : (max2.y - min1.y);
+        float overlapDistZ = (max1.z - min2.z < max2.z - min1.z) ? (max1.z - min2.z) : (max2.z - min1.z);
 
         // 最もめり込みが小さい軸を使用して法線と衝突点を計算
         if (overlapDistX <= overlapDistY && overlapDistX <= overlapDistZ) {
@@ -82,9 +82,14 @@ bool BoxCollider::CheckBoxToBox(BoxCollider* other, CollisionInfo& info) {
                 info.normal = { 1.0f, 0.0f, 0.0f };  // 正のX方向
                 info.collisionPoint.x = min1.x;
             }
-            // Y, Z座標は中間点を使用
-            info.collisionPoint.y = (std::max(min1.y, min2.y) + std::min(max1.y, max2.y)) * 0.5f;
-            info.collisionPoint.z = (std::max(min1.z, min2.z) + std::min(max1.z, max2.z)) * 0.5f;
+            // Y, Z座標は中間点を使用（std::maxとstd::minを使わない版）
+            float maxOfMinsY = (min1.y > min2.y) ? min1.y : min2.y;
+            float minOfMaxsY = (max1.y < max2.y) ? max1.y : max2.y;
+            info.collisionPoint.y = (maxOfMinsY + minOfMaxsY) * 0.5f;
+
+            float maxOfMinsZ = (min1.z > min2.z) ? min1.z : min2.z;
+            float minOfMaxsZ = (max1.z < max2.z) ? max1.z : max2.z;
+            info.collisionPoint.z = (maxOfMinsZ + minOfMaxsZ) * 0.5f;
         }
         else if (overlapDistY <= overlapDistX && overlapDistY <= overlapDistZ) {
             // Y軸方向の衝突
@@ -97,9 +102,14 @@ bool BoxCollider::CheckBoxToBox(BoxCollider* other, CollisionInfo& info) {
                 info.normal = { 0.0f, 1.0f, 0.0f };  // 正のY方向
                 info.collisionPoint.y = min1.y;
             }
-            // X, Z座標は中間点を使用
-            info.collisionPoint.x = (std::max(min1.x, min2.x) + std::min(max1.x, max2.x)) * 0.5f;
-            info.collisionPoint.z = (std::max(min1.z, min2.z) + std::min(max1.z, max2.z)) * 0.5f;
+            // X, Z座標は中間点を使用（std::maxとstd::minを使わない版）
+            float maxOfMinsX = (min1.x > min2.x) ? min1.x : min2.x;
+            float minOfMaxsX = (max1.x < max2.x) ? max1.x : max2.x;
+            info.collisionPoint.x = (maxOfMinsX + minOfMaxsX) * 0.5f;
+
+            float maxOfMinsZ = (min1.z > min2.z) ? min1.z : min2.z;
+            float minOfMaxsZ = (max1.z < max2.z) ? max1.z : max2.z;
+            info.collisionPoint.z = (maxOfMinsZ + minOfMaxsZ) * 0.5f;
         }
         else {
             // Z軸方向の衝突
@@ -112,9 +122,14 @@ bool BoxCollider::CheckBoxToBox(BoxCollider* other, CollisionInfo& info) {
                 info.normal = { 0.0f, 0.0f, 1.0f };  // 正のZ方向
                 info.collisionPoint.z = min1.z;
             }
-            // X, Y座標は中間点を使用
-            info.collisionPoint.x = (std::max(min1.x, min2.x) + std::min(max1.x, max2.x)) * 0.5f;
-            info.collisionPoint.y = (std::max(min1.y, min2.y) + std::min(max1.y, max2.y)) * 0.5f;
+            // X, Y座標は中間点を使用（std::maxとstd::minを使わない版）
+            float maxOfMinsX = (min1.x > min2.x) ? min1.x : min2.x;
+            float minOfMaxsX = (max1.x < max2.x) ? max1.x : max2.x;
+            info.collisionPoint.x = (maxOfMinsX + minOfMaxsX) * 0.5f;
+
+            float maxOfMinsY = (min1.y > min2.y) ? min1.y : min2.y;
+            float minOfMaxsY = (max1.y < max2.y) ? max1.y : max2.y;
+            info.collisionPoint.y = (maxOfMinsY + minOfMaxsY) * 0.5f;
         }
 
         return true;
