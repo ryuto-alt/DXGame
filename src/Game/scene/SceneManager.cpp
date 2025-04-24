@@ -52,6 +52,7 @@ void SceneManager::Update() {
         currentScene_->SetSpriteCommon(spriteCommon_);
         currentScene_->SetSrvManager(srvManager_);
         currentScene_->SetCamera(camera_);
+        currentScene_->SetWinApp(winApp_); // WinAppをセットする処理を追加
 
         try {
             // シーンの初期化（例外をキャッチ）

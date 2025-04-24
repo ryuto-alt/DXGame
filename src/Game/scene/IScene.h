@@ -41,6 +41,7 @@ public:
     void SetSpriteCommon(SpriteCommon* spriteCommon) { spriteCommon_ = spriteCommon; }
     void SetSrvManager(SrvManager* srvManager) { srvManager_ = srvManager; }
     void SetCamera(Camera* camera) { camera_ = camera; }
+    void SetWinApp(WinApp* winApp) { winApp_ = winApp; } // WinAppの設定を追加
 
 protected:
     // シーンマネージャー（シーン切り替えに使用）
@@ -52,4 +53,5 @@ protected:
     SpriteCommon* spriteCommon_ = nullptr;
     SrvManager* srvManager_ = nullptr;
     Camera* camera_ = nullptr;
+    WinApp* winApp_ = nullptr; // WinAppメンバを追加
 };

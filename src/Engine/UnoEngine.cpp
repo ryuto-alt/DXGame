@@ -228,8 +228,57 @@ void UnoEngine::InitializeImGui() {
         // ImGui初期化
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
         ImGui::StyleColorsDark();
         ImGui_ImplWin32_Init(winApp_->GetHwnd());
+
+        // フォントパスの設定と存在確認
+        const char* fontPath = "C:\\WINDOWS\\FONTS\\YUDIGKYOKASHON-R.TTC";
+        if (GetFileAttributesA(fontPath) == INVALID_FILE_ATTRIBUTES) {
+            // 指定したフォントが存在しない場合、代替フォントを試す
+            OutputDebugStringA("WARNING: Primary font not found, trying alternative fonts\n");
+
+            // 代替フォント候補
+            const char* alternativeFonts[] = {
+                "C:\\Windows\\Fonts\\meiryo.ttc",
+                "C:\\Windows\\Fonts\\msgothic.ttc",
+                "C:\\Windows\\Fonts\\YuGothR.ttc"
+            };
+
+            fontPath = nullptr;
+            for (const char* altFont : alternativeFonts) {
+                if (GetFileAttributesA(altFont) != INVALID_FILE_ATTRIBUTES) {
+                    fontPath = altFont;
+                    OutputDebugStringA(("Using alternative font: " + std::string(altFont) + "\n").c_str());
+                    break;
+                }
+            }
+
+            if (!fontPath) {
+                OutputDebugStringA("WARNING: No Japanese fonts found, using default font\n");
+            }
+        }
+
+        // 日本語フォントの追加（フォントが見つかった場合のみ）
+        if (fontPath) {
+            // フォントサイズ設定
+            float fontSize = 18.0f;
+            ImFontConfig fontConfig;
+            fontConfig.MergeMode = false;
+
+            // 日本語フォントの読み込み
+            ImFont* jpFont = io.Fonts->AddFontFromFileTTF(
+                fontPath,
+                fontSize,
+                &fontConfig,
+                io.Fonts->GetGlyphRangesJapanese()
+            );
+
+            if (jpFont) {
+                io.FontDefault = jpFont;
+                OutputDebugStringA("Japanese font loaded successfully\n");
+            }
+        }
 
         // SrvManagerのディスクリプタヒープを使用
         ImGui_ImplDX12_Init(

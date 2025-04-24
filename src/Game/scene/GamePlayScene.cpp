@@ -16,12 +16,14 @@ void GamePlayScene::Initialize() {
     assert(input_);
     assert(spriteCommon_);
     assert(camera_);
+    assert(winApp_); // winApp_が設定されていることを確認
 
-    // ImGuiフォントの設定
-    SetupImGuiFont();
-
-    // カメラの初期設定
+    // カメラの初期設定（修正：上方向をY軸に合わせる）
     camera_->SetTranslate({ 0.0f, 2.0f, -5.0f });
+    camera_->SetFovY(0.45f); // 視野角を設定（約26度）
+    camera_->SetAspectRatio(static_cast<float>(WinApp::kClientWidth) / static_cast<float>(WinApp::kClientHeight));
+    camera_->SetNearClip(0.1f);
+    camera_->SetFarClip(100.0f);
     camera_->Update();
 
     // プレイヤーモデルの読み込み
@@ -40,7 +42,7 @@ void GamePlayScene::Initialize() {
     // ステージモデルの読み込み
     stageModel_ = std::make_unique<Model>();
     stageModel_->Initialize(dxCommon_);
-    stageModel_->LoadFromObj("Resources/models", "stage1.obj");
+    stageModel_->LoadFromObj("Resources/models/stage1", "stage1.obj");
 
     // ステージオブジェクトの初期化
     stageObject_ = std::make_unique<Object3d>();
@@ -278,6 +280,7 @@ void GamePlayScene::UpdateCamera() {
     // 目標カメラ位置を計算
     Vector3 targetCameraPos;
 
+    // 修正: Z軸とX軸の符号を調整（DirectXの座標系に合わせる）
     if (thirdPersonCamera_) {
         // 三人称視点 - カメラの角度に基づいた位置計算
         float camX = playerPos.x - std::sin(cameraYaw_) * std::cos(cameraPitch_) * cameraDistance_;
@@ -307,7 +310,8 @@ void GamePlayScene::UpdateCamera() {
     // カメラの位置を更新
     camera_->SetTranslate(newCameraPos);
 
-    // カメラの向きを更新
+    // カメラの向きを更新（修正：正しい回転順序を設定）
+    // DirectXの座標系ではY軸が上、X軸が右、Z軸が奥行き
     camera_->SetRotate({ cameraPitch_, cameraYaw_, 0.0f });
 
     // カメラの更新を適用
@@ -323,28 +327,28 @@ void GamePlayScene::Draw() {
     stageObject_->Draw();
 
     // ImGuiで操作説明と衝突状態を表示
-    ImGui::Begin(u8"衝突テスト");
-    ImGui::Text(u8"操作方法:");
-    ImGui::Text(u8"WASD - 移動");
-    ImGui::Text(u8"スペース - 上昇");
-    ImGui::Text(u8"Ctrl - 下降");
-    ImGui::Text(u8"Shift - 加速");
-    ImGui::Text(u8"V - カメラ視点切替");
-    ImGui::Text(u8"右クリック - カメラ回転");
-    ImGui::Text(u8"PgUp/PgDn - カメラ距離調整");
-    ImGui::Text(u8"↑↓ - カメラ追従速度調整");
-    ImGui::Text(u8"ESC - タイトルに戻る");
+    ImGui::Begin("衝突テスト");
+    ImGui::Text("操作方法:");
+    ImGui::Text("WASD - 移動");
+    ImGui::Text("スペース - 上昇");
+    ImGui::Text("Ctrl - 下降");
+    ImGui::Text("Shift - 加速");
+    ImGui::Text("V - カメラ視点切替");
+    ImGui::Text("右クリック - カメラ回転");
+    ImGui::Text("PgUp/PgDn - カメラ距離調整");
+    ImGui::Text("↑↓ - カメラ追従速度調整");
+    ImGui::Text("ESC - タイトルに戻る");
     ImGui::Separator();
-    ImGui::Text(u8"衝突状態: %s", isColliding_ ? u8"衝突中" : u8"衝突なし");
-    ImGui::Text(u8"プレイヤー位置: (%.1f, %.1f, %.1f)",
+    ImGui::Text("衝突状態: %s", isColliding_ ? "衝突中" : "衝突なし");
+    ImGui::Text("プレイヤー位置: (%.1f, %.1f, %.1f)",
         playerObject_->GetPosition().x,
         playerObject_->GetPosition().y,
         playerObject_->GetPosition().z);
-    ImGui::Text(u8"カメラ設定:");
-    ImGui::Text(u8"視点: %s", thirdPersonCamera_ ? u8"三人称" : u8"一人称");
-    ImGui::SliderFloat(u8"カメラ距離", &cameraDistance_, 2.0f, 20.0f);
-    ImGui::SliderFloat(u8"追従速度", &cameraFollowSpeed_, 0.01f, 1.0f);
-    ImGui::SliderFloat(u8"マウス感度", &mouseSensitivity_, 0.0005f, 0.005f);
+    ImGui::Text("カメラ設定:");
+    ImGui::Text("視点: %s", thirdPersonCamera_ ? "三人称" : "一人称");
+    ImGui::SliderFloat("カメラ距離", &cameraDistance_, 2.0f, 20.0f);
+    ImGui::SliderFloat("追従速度", &cameraFollowSpeed_, 0.01f, 1.0f);
+    ImGui::SliderFloat("マウス感度", &mouseSensitivity_, 0.0005f, 0.005f);
     ImGui::End();
 }
 
@@ -370,23 +374,4 @@ void GamePlayScene::OnPlayerCollision(const CollisionInfo& info) {
 
     // デバッグ出力
     OutputDebugStringA("Player Collision Detected!\n");
-}
-
-void GamePlayScene::SetupImGuiFont() {
-    // ImGuiのフォント設定
-    ImGuiIO& io = ImGui::GetIO();
-
-    // 日本語フォントの追加
-    // 注意: 適切なフォントファイルへのパスを指定する必要があります
-    ImFont* font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\meiryo.ttc", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
-
-    // フォントがロードできない場合はデフォルトを使用
-    if (font == nullptr) {
-        OutputDebugStringA("Failed to load Japanese font. Using default font.\n");
-    }
-    else {
-        // ロードしたフォントをデフォルトに設定
-        io.FontDefault = font;
-        OutputDebugStringA("Japanese font loaded successfully.\n");
-    }
 }
