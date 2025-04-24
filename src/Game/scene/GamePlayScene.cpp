@@ -22,7 +22,9 @@ void GamePlayScene::Initialize() {
     camera_->SetTranslate({ 0.0f, 2.0f, -20.0f });
     camera_->SetFovY(0.45f); // 視野角を設定（約26度）
     camera_->SetAspectRatio(static_cast<float>(WinApp::kClientWidth) / static_cast<float>(WinApp::kClientHeight));
-
+    // ニアクリップとファークリップの設定を追加
+    camera_->SetNearClip(1.5f);  // 小さすぎる値を避ける
+    camera_->SetFarClip(100.0f);
     camera_->Update();
 
     // プレイヤーモデルの読み込み
@@ -283,7 +285,6 @@ void GamePlayScene::UpdateCamera() {
     // 目標カメラ位置を計算
     Vector3 targetCameraPos;
 
-    // DirectXの座標系に合わせる
     if (thirdPersonCamera_) {
         // 三人称視点 - カメラの角度に基づいた位置計算
         float camX = playerPos.x - std::sin(cameraYaw_) * std::cos(cameraPitch_) * cameraDistance_;
@@ -313,8 +314,10 @@ void GamePlayScene::UpdateCamera() {
     // カメラの位置を更新
     camera_->SetTranslate(newCameraPos);
 
-    // カメラの向きを更新（修正：正しい回転順序を設定）
-    camera_->SetRotate({ cameraPitch_, cameraYaw_, 0.0f });
+    // 重要: カメラの回転順序を修正
+    // Y軸回転（ヨー）を先に適用し、次にX軸回転（ピッチ）を適用する
+    Vector3 rotation = { cameraPitch_, cameraYaw_, 0.0f };
+    camera_->SetRotate(rotation);
 
     // カメラの更新を適用
     camera_->Update();

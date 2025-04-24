@@ -167,41 +167,44 @@ Matrix4x4 Inverse(const Matrix4x4& m) {
 #pragma endregion
 
 #pragma region コタンジェント
-//float cot(float x) {
-//	float cot;
-//	cot = 1 / std::tan(x);
-//	return cot;
-//}
+float cot(float x) {
+	float cot;
+	cot = 1 / std::tan(x);
+	return cot;
+}
 #pragma endregion
 
 #pragma region 透視投影行列
 //Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
 //	Matrix4x4 result;
-//	result = {
-//		(1 / aspectRatio) * cot(fovY / 2),0,0,0,
-//		0,cot(fovY / 2),0,0,
-//		0,0,farClip / (farClip - nearClip),1,
-//		0,0,(-nearClip * farClip) / (farClip - nearClip),0
-//	};
+//
+//	float yScale = 1.0f / std::tan(fovY / 2.0f);
+//	float xScale = yScale / aspectRatio;
+//
+//	result.m[0][0] = xScale;
+//	result.m[0][1] = 0.0f;
+//	result.m[0][2] = 0.0f;
+//	result.m[0][3] = 0.0f;
+//
+//	result.m[1][0] = 0.0f;
+//	result.m[1][1] = yScale;
+//	result.m[1][2] = 0.0f;
+//	result.m[1][3] = 0.0f;
+//
+//	result.m[2][0] = 0.0f;
+//	result.m[2][1] = 0.0f;
+//	result.m[2][2] = farClip / (nearClip - farClip);
+//	result.m[2][3] = -1.0f;
+//
+//	result.m[3][0] = 0.0f;
+//	result.m[3][1] = 0.0f;
+//	result.m[3][2] = (nearClip * farClip) / (nearClip - farClip);
+//	result.m[3][3] = 0.0f;
+//
 //	return result;
 //}
 #pragma endregion
 
-#pragma region 平行投影行列
-//Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
-//
-//	Matrix4x4 result;
-//
-//	result = {
-//	2 / (right - left),0.0f,0.0f,0.0f,
-//	0.0f,2 / (top - bottom),0.0f,0.0f,
-//	0.0f,0.0f,1 / (farClip - nearClip),0.0f,
-//	(left + right) / (left - right),(top + bottom) / (bottom - top),nearClip / (nearClip - farClip),1.0f
-//	};
-//
-//	return result;
-//}
-#pragma endregion
 
 #pragma region ビューポート
 //Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth)

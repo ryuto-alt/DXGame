@@ -7,31 +7,17 @@ float Cot(float theta)
 }
 
 
-Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearCilp, float farClip)
-{
-	Matrix4x4 ans;
+Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
+	Matrix4x4 result;
 
-	ans.m[0][0] = Cot(fovY / 2) / aspectRatio;
-	ans.m[0][1] = 0;
-	ans.m[0][2] = 0;
-	ans.m[0][3] = 0;
+	result = {
+		(1 / aspectRatio) * Cot(fovY / 2), 0, 0, 0,
+		0, Cot(fovY / 2), 0, 0,
+		0, 0, farClip / (farClip - nearClip), 1,
+		0, 0, (-nearClip * farClip) / (farClip - nearClip), 0
+	};
 
-	ans.m[1][0] = 0;
-	ans.m[1][1] = Cot(fovY / 2);
-	ans.m[1][2] = 0;
-	ans.m[1][3] = 0;
-
-	ans.m[2][0] = 0;
-	ans.m[2][1] = 0;
-	ans.m[2][2] = farClip / (farClip - nearCilp);
-	ans.m[2][3] = 1;
-
-	ans.m[3][0] = 0;
-	ans.m[3][1] = 0;
-	ans.m[3][2] = -(nearCilp * farClip) / (farClip - nearCilp);
-	ans.m[3][3] = 0;
-
-	return ans;
+	return result;
 }
 
 
